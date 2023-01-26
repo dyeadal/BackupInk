@@ -1,5 +1,6 @@
 import sys
 import os
+import platform #Detects OS platform to run correct copy and hash commands.
 
 # Main function
 if __name__ == "__main__":
@@ -10,11 +11,18 @@ if __name__ == "__main__":
         print("No arguments supplied\nUse --help to print options available\n\n")
 
     
-# If arguments were provided
+# If arguments were provided (meat and potatoes of script)
     else:
+
+    # System information for OS identification and command execution
+        localPlatform = platform.system()
+        print("Platform: " + localPlatform) #debug
+
     #creates a deep copy array of the arguments  
         argList = sys.argv.copy()
         argList.pop(0) #removes the first (0) argument or item in the list which is the command to run the script itself or location of the script
+
+
 
     #if "--help" is used
         if "--help" in argList:
