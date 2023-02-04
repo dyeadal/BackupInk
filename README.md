@@ -1,7 +1,11 @@
-# IncBackup
-Incrementally back up files to an existing folder.
-
+# BackupInk
 _Work in Progress. Don't mind the dust :broom:_
+
+- Create backups of directories/storage devices
+- Back up files incrementally.
+- Review disrepencies via hashsum and timestamps
+- Export disrepencies and/or changes to an XML file
+
 
 ---
 
@@ -21,6 +25,4 @@ _Work in Progress. Don't mind the dust :broom:_
  
 ---
 
-:warning: :beetle: :warning:
-
-To report any **bugs** or **suggestions** contact me via dyeadal@gmail.com
+:warning: Report any **bugs** or **suggestions** via email: dyeadal@gmail.com
