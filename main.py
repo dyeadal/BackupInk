@@ -7,15 +7,15 @@ if __name__ == "__main__":
 
 # Computer Information | Default and Environmental Variables
     opsysPlatform = platform.system()
-    toFile = "Not yet chosen"
-    fromFile = "Not yet chosen"
+    toFile = ""
+    fromFile = ""
 
 
 
 # Main Menu Function
     def mainMenu():
-        print("\nDyeadal's Incremental Backup\n-------------------------------")
-        print("Computer Information: " + opsysPlatform + "\n")
+        splash()
+        print("Computer Information: " + opsysPlatform)
         print("Source Directory: " + fromFile + "\t\t\tArchive Directory: " + toFile)
         print("\n\tC\t-\tChose Directories to compare or create backup")
         print("\tD\t-\tDisplay Differences")
@@ -24,10 +24,10 @@ if __name__ == "__main__":
         option = input("\n\nType Letter and press [Enter]: ")
 
         if option.isalpha():
-            if option == "C" or "c": choseDirs()
-            if option == "D" or "d": print("Displaying Differences")
-            if option == "I" or "i": print("Performing Incremental Backup")
-            if option == "Q" or "q": print("Quitting")
+            if option.upper() == "C": choseDirs()
+            if option.upper() == "D": print("Displaying Differences")
+            if option.upper() == "I": print("Performing Incremental Backup")
+            if option.upper() == "Q": print("Quitting")
             else:
                 print("Not a registered option, returning to screen")
                 mainMenu()
@@ -39,21 +39,39 @@ if __name__ == "__main__":
 # Functions to begin the directory allotment
 # Splitting into multiple functions allows us to repeat a selection process for each individal directory path if it is not a valid input
     def choseDirs():
+        splash()
         print("\n\nDirectories for Comparing or Incrementally Backing Up\n")
-        choseSource()
-        choseArchive()
+        global toFile, fromFile
+        if fromFile:
+            option = input("Chose a different directory than ", fromFile,"? (y/n)")
+            if option.upper() == "Y":
+                choseSource()
+        else: choseSource()
+        if toFile:
+            option = input("Chose a different directory than Path:", toFile, " ? (y/n):")
+            if option.upper() == "Y":
+                choseArchive()
+        else:
+            choseArchive()
         print("\n Current/Production Storage Directory: " + fromFile + "\n Directory to Archive to or Compare: " + toFile)
         mainMenu()
     # Function to chose archive directory
     def choseArchive():
-        source = input("Directory to copy from, or compare (usually storage device that needs files backed up): ")
+        source = input("Archive Directory Path: ")
         if validDir(source):
             print("Valid: " + source)
             global fromFile
             fromFile = source
         else:
-            print("Invalid Directory/File\n")
-            choseArchive()
+            print("Invalid Directory/File, check if storage is properly connected/mounted")
+            option = input("Try Again? (y/n): ")
+            if option.upper() == "Y":
+                choseArchive()
+            elif option.upper() == "N":
+                mainMenu()
+            else:
+                print("Invalid, Quitting")
+                terminate()
     # Function to chose source directory
     def choseSource():
         archive = input("Directory to back up to, or compare to (an archive of existing files): ")
@@ -62,8 +80,14 @@ if __name__ == "__main__":
             global toFile
             toFile = archive
         else:
-            print("Invalid Directory/File\n")
-            choseSource()
+            print("Invalid Directory/File, check if storage is properly connected/mounted")
+            option = input("Try Again? (y/n): ")
+            if option.upper() == "Y":
+                choseSource()
+            elif option.upper() == "N":
+                mainMenu()
+            else:
+                terminate("Invalid option, exiting program")
     # Function to validate file path exists
     def validDir(directorypath):
         if os.path.exists(directorypath):
@@ -80,12 +104,35 @@ if __name__ == "__main__":
     # Function to return to menu or quit
     def returnToMenu():
         option = input("\n\n\nReturn to Menu [Enter] or [Q]uit")
-        if option == "Q" or "q": terminate()
+        if option.upper() == "Q": terminate()
         else: mainMenu()
+
+###################### General Functions ########################
+    # Logo ASCII art
+    def splash():
+        clearScreen()
+        print("________________")
+        print("| |           | |")
+        print("| | IncBackup | |")
+        print("| |           | |")
+        print("| |___________| |")
+        print("|   _________   |")
+        print("|   |     | |   |")
+        print("|___|_____|_|___|")
+        print("Made by dyeadal\n\n")
+    # Clear console screen
+    def clearScreen():
+        if opsysPlatform == "Windows":
+            os.system("cls")
+        elif opsysPlatform == "Linux":
+            os.system('clear')
 
     #Function to quit program
     def terminate():
-        print("\nGood bye :)")
+        quit()
+    def terminate(msg):
+        print(msg)
+        quit()
 
 
 
