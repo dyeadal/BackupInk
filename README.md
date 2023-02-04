@@ -1,6 +1,10 @@
 # BackupInk
 _Work in Progress. Don't mind the dust :broom:_
 
+I am a current undergraduate student, studying Cyber Security, this is my first attempt in contributing open source software. Additionally, this is my first attempt at creating software that is useful AND not an assignment for a course. Unfortunately my educational path only introduced programming and scripting, and I want to obtain the ability to create useful scripts and programs that make managing my own environment (and hopefully yours) easier. 
+
+My goals for this personal project, is to be able to :
+
 - Create backups of directories/storage devices
 - Back up files incrementally.
 - Review disrepencies via hashsum and timestamps
