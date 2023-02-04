@@ -18,10 +18,10 @@ _Work in Progress. Don't mind the dust :broom:_
  - Copy file functions of missing or modified files.
  
  ## Researching to Possibly Implement :test_tube: 
- - How to and if to use OOP practices for this application.
  - Research for running MD5 hashsums is efficient for either: 
-   - Python executing built in OS commands.
-   - Python reading the file itself and using an MD5 module.
+   - Python executing OS commands.
+     OR
+   - Python file manipulation and module to create a hashsum.
  
 ---
 
