@@ -113,7 +113,7 @@ if __name__ == "__main__":
         clearScreen()
         print("________________")
         print("| |           | |")
-        print("| | IncBackup | |")
+        print("| | BackupInk | |")
         print("| |           | |")
         print("| |___________| |")
         print("|   _________   |")
