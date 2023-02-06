@@ -7,8 +7,8 @@ if __name__ == "__main__":
 
 # Computer Information | Default and Environmental Variables
     opsysPlatform = platform.system()
-    toFile = ""
-    fromFile = ""
+    archiveDir = ""
+    sourceDir = ""
 
 
 
@@ -16,24 +16,18 @@ if __name__ == "__main__":
     def mainMenu():
         splash()
         print("Computer Information: " + opsysPlatform)
-        print("Source Directory: " + fromFile + "\t\t\tArchive Directory: " + toFile)
+        print("Source Directory: " + sourceDir +"\nArchive Directory: " + archiveDir)
         print("\n\tC\t-\tChose Directories to compare or create backup")
         print("\tD\t-\tDisplay Differences")
         print("\tI\t-\tPerform an Incremental Backup")
         print("\n\tQ\t-\tQuit")
         option = input("\n\nType Letter and press [Enter]: ")
 
-        if option.isalpha():
-            if option.upper() == "C": choseDirs()
-            if option.upper() == "D": print("Displaying Differences")
-            if option.upper() == "I": print("Performing Incremental Backup")
-            if option.upper() == "Q": print("Quitting")
-            else:
-                print("Not a registered option, returning to screen")
-                mainMenu()
-        else:
-            print("Not a valid input, returning to screen")
-            mainMenu()
+        if option.upper() == "C" : choseDirs()
+        elif option.upper() == "D" : displayDifferences()
+        elif option.upper() == "I" : print("Performing Incremental Backup")
+        elif option.upper() == "Q" : print("Quitting")
+        else: mainMenu()
 
 ####################### Chose Directories ############################
 # Functions to begin the directory allotment
@@ -41,27 +35,33 @@ if __name__ == "__main__":
     def choseDirs():
         splash()
         print("\n\nDirectories for Comparing or Incrementally Backing Up\n")
-        global toFile, fromFile
-        if fromFile:
-            option = input("Chose a different directory than ", fromFile,"? (y/n)")
+        global archiveDir, sourceDir
+        if sourceDir!= "":
+            print("Chose a different directory than ", sourceDir,"?")
+            option = input("(y/n): ")
             if option.upper() == "Y":
                 choseSource()
         else: choseSource()
-        if toFile:
-            option = input("Chose a different directory than Path:", toFile, " ? (y/n):")
+
+        if archiveDir != "":
+            print("Chose a different directory than Path:", archiveDir, " ?")
+            option = input("(y/n): ")
             if option.upper() == "Y":
                 choseArchive()
-        else:
-            choseArchive()
-        print("\n Current/Production Storage Directory: " + fromFile + "\n Directory to Archive to or Compare: " + toFile)
+        else: choseArchive()
         mainMenu()
     # Function to chose archive directory
     def choseArchive():
-        source = input("Archive Directory Path: ")
+        source = input("Full path of where to store backup: ")
         if validDir(source):
             print("Valid: " + source)
-            global fromFile
-            fromFile = source
+            global archiveDir
+            if source.endswith("/") or source.endswith("\\"):
+                archiveDir = source
+            elif opsysPlatform == "Windows":
+                archiveDir = source+"\\"
+            else: archiveDir = source+"/"
+
         else:
             print("Invalid Directory/File, check if storage is properly connected/mounted")
             option = input("Try Again? (y/n): ")
@@ -74,11 +74,11 @@ if __name__ == "__main__":
                 terminate()
     # Function to chose source directory
     def choseSource():
-        archive = input("Directory to back up to, or compare to (an archive of existing files): ")
+        archive = input("Full path of data needing back up: ")
         if validDir(archive):
             print("Valid: " + archive)
-            global toFile
-            toFile = archive
+            global sourceDir
+            sourceDir = archive
         else:
             print("Invalid Directory/File, check if storage is properly connected/mounted")
             option = input("Try Again? (y/n): ")
@@ -88,6 +88,13 @@ if __name__ == "__main__":
                 mainMenu()
             else:
                 terminate("Invalid option, exiting program")
+
+    def areDirEmpty():
+        if sourceDir == "" or archiveDir == "":
+            print("You must first choose your directories")
+            input("Press any key to return to menu")
+            mainMenu()
+
     # Function to validate file path exists
     def validDir(directorypath):
         if os.path.exists(directorypath):
@@ -97,7 +104,16 @@ if __name__ == "__main__":
 ####################### Integrity Check ############################
 # Function to show the differences between the two chosen directories
     def displayDifferences():
-        mainMenu()
+        splash()
+        areDirEmpty()
+
+
+    def hashCalculator():
+        print("")
+
+    def dirArray(directory):
+        listdir = os.listdir(directory)
+        print(directory+listdir[0])
 
 
 ###################### Termination Options ###############################
@@ -111,7 +127,7 @@ if __name__ == "__main__":
     # Logo ASCII art
     def splash():
         clearScreen()
-        print("________________")
+        print(".................")
         print("| |           | |")
         print("| | BackupInk | |")
         print("| |           | |")
@@ -123,9 +139,11 @@ if __name__ == "__main__":
     # Clear console screen
     def clearScreen():
         if opsysPlatform == "Windows":
-            os.system("cls")
+            os.system('cls')
+            print("")
         elif opsysPlatform == "Linux":
             os.system('clear')
+        print("")
 
     #Function to quit program
     def terminate():
