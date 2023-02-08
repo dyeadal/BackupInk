@@ -1,6 +1,7 @@
 import sys
 import os # lists directories, and its files. Also can see modification dates
 import platform #Detects OS platform to run correct copy and hash commands.
+import openpyxl
 
 # Main function
 if __name__ == "__main__":
@@ -89,7 +90,7 @@ if __name__ == "__main__":
             else:
                 terminate("Invalid option, exiting program")
 
-    def areDirEmpty():
+    def areDirPathEmpty():
         if sourceDir == "" or archiveDir == "":
             print("You must first choose your directories")
             input("Press any key to return to menu")
@@ -97,7 +98,7 @@ if __name__ == "__main__":
 
     # Function to validate file path exists
     def validDir(directorypath):
-        if os.path.exists(directorypath):
+        if os.path.isdir(directorypath):
             return True;
         else: return False;
 
@@ -105,8 +106,20 @@ if __name__ == "__main__":
 # Function to show the differences between the two chosen directories
     def displayDifferences():
         splash()
-        areDirEmpty()
+        crawlDir(sourceDir)
 
+    def crawlDir(directory):
+        maindir = os.listdir(directory)
+        x = 0
+        while len(maindir) > x:
+            path =directory+maindir[x]
+            if validDir(path):
+                if isWin():
+                    print(path+"\\")
+                if isUnix():
+                    print(path + "/")
+            else: print(path)
+            x+=1
 
     def hashCalculator():
         print("")
@@ -115,6 +128,13 @@ if __name__ == "__main__":
         listdir = os.listdir(directory)
         print(directory+listdir[0])
 
+###################### Excel Functions ##################################
+    #Test openpyxl module to see how to create and manipulate spread sheets
+    def createSpreadSheetFile(filename):
+        workbook = openpyxl.Workbook()
+        sheet = workbook.active
+        sheet ['A1'] = "Hi"
+        workbook.save(filename+"xml")
 
 ###################### Termination Options ###############################
     # Function to return to menu or quit
@@ -138,12 +158,24 @@ if __name__ == "__main__":
         print("Made by dyeadal\n\n")
     # Clear console screen
     def clearScreen():
-        if opsysPlatform == "Windows":
+        if isWin():
             os.system('cls')
             print("")
-        elif opsysPlatform == "Linux":
+        elif isUnix() == "Linux":
             os.system('clear')
         print("")
+
+    def isWin():
+        global opsysPlatform
+        if opsysPlatform == "Windows":
+            return True
+        else: return False
+
+    def isUnix():
+        global opsysPlatform
+        if opsysPlatform == "Linux":
+            return True
+        else: return False
 
     #Function to quit program
     def terminate():
