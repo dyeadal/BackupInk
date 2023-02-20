@@ -1,39 +1,43 @@
-import sys
-import os # lists directories, and its files. Also can see modification dates
-import platform #Detects OS platform to run correct copy and hash commands.
-import openpyxl
+import os       # to list details of directories, and its files.
+import platform     # to detects OS platform to run correct copy and hash commands.
+import openpyxl     # to create and edit spreadsheets
 
 # Main function
 if __name__ == "__main__":
 
-# Computer Information | Default and Environmental Variables
+    # Computer Information | Default and Environmental Variables
     opsysPlatform = platform.system()
     archiveDir = ""
     sourceDir = ""
 
-
-
-# Main Menu Function
-    def mainMenu():
+    # Main Menu Function
+    def main_menu():
         splash()
         print("Computer Information: " + opsysPlatform)
-        print("Source Directory: " + sourceDir +"\nArchive Directory: " + archiveDir)
+        print("Source Directory: " + sourceDir + "\nArchive Directory: " + archiveDir)
         print("\n\tC\t-\tChose Directories to compare or create backup")
         print("\tD\t-\tDisplay Differences")
         print("\tI\t-\tPerform an Incremental Backup")
         print("\n\tQ\t-\tQuit")
         option = input("\n\nType Letter and press [Enter]: ")
 
-        if option.upper() == "C" : choseDirs()
-        elif option.upper() == "D" : displayDifferences()
-        elif option.upper() == "I" : print("Performing Incremental Backup")
-        elif option.upper() == "Q" : print("Quitting")
-        else: mainMenu()
+        if option.upper() == "C":
+            chose_directories()
+        elif option.upper() == "D":
+            directory_differences()
+        elif option.upper() == "I" :
+            print("Performing Incremental Backup")
+        elif option.upper() == "Q":
+            print("Quitting")
+        else:
+            return_to_menu()
 
-####################### Chose Directories ############################
-# Functions to begin the directory allotment
-# Splitting into multiple functions allows us to repeat a selection process for each individal directory path if it is not a valid input
-    def choseDirs():
+"""
+Chose Directories Functions
+"""
+
+    # Function to begin choosing directories to compare and create backups
+    def chose_directories():
         splash()
         print("\n\nDirectories for Comparing or Incrementally Backing Up\n")
         global archiveDir, sourceDir
@@ -41,20 +45,22 @@ if __name__ == "__main__":
             print("Chose a different directory than ", sourceDir,"?")
             option = input("(y/n): ")
             if option.upper() == "Y":
-                choseSource()
-        else: choseSource()
+                chose_source()
+        else: chose_source()
 
         if archiveDir != "":
             print("Chose a different directory than Path:", archiveDir, " ?")
             option = input("(y/n): ")
             if option.upper() == "Y":
-                choseArchive()
-        else: choseArchive()
-        mainMenu()
+                chose_archive()
+        else:
+            chose_archive()
+
+        return_to_menu()
     # Function to chose archive directory
-    def choseArchive():
+    def chose_archive():
         source = input("Full path of where to store backup: ")
-        if validDir(source):
+        if is_valid_directory(source):
             print("Valid: " + source)
             global archiveDir
             if source.endswith("/") or source.endswith("\\"):
@@ -67,16 +73,16 @@ if __name__ == "__main__":
             print("Invalid Directory/File, check if storage is properly connected/mounted")
             option = input("Try Again? (y/n): ")
             if option.upper() == "Y":
-                choseArchive()
+                chose_archive()
             elif option.upper() == "N":
-                mainMenu()
+                return_to_menu()
             else:
                 print("Invalid, Quitting")
-                terminate()
+                terminate(None)
     # Function to chose source directory
-    def choseSource():
+    def chose_source():
         archive = input("Full path of data needing back up: ")
-        if validDir(archive):
+        if is_valid_directory(archive):
             print("Valid: " + archive)
             global sourceDir
             sourceDir = archive
@@ -84,53 +90,65 @@ if __name__ == "__main__":
             print("Invalid Directory/File, check if storage is properly connected/mounted")
             option = input("Try Again? (y/n): ")
             if option.upper() == "Y":
-                choseSource()
+                chose_source()
             elif option.upper() == "N":
-                mainMenu()
+                return_to_menu()
             else:
                 terminate("Invalid option, exiting program")
 
-    def areDirPathEmpty():
+    def are_directories_chosen():
         if sourceDir == "" or archiveDir == "":
             print("You must first choose your directories")
             input("Press any key to return to menu")
-            mainMenu()
+            return_to_menu()
 
-    # Function to validate file path exists
-    def validDir(directorypath):
-        if os.path.isdir(directorypath):
-            return True;
-        else: return False;
+    # Function to validate directory path actually exists
+    def is_valid_directory(directorypath):
+        return os.path.isdir(directorypath)
+        # Why does this line have an error?
 
-####################### Integrity Check ############################
-# Function to show the differences between the two chosen directories
-    def displayDifferences():
+"""
+Integrity Check Functions
+"""
+    # Function to show the differences between the two chosen directories
+    def directory_differences():
         splash()
-        crawlDir(sourceDir)
+        are_directories_chosen()
+        map_directory(sourceDir)
 
-    def crawlDir(directory):
+    def map_directory(directory):
         maindir = os.listdir(directory)
         x = 0
         while len(maindir) > x:
-            path =directory+maindir[x]
-            if validDir(path):
-                if isWin():
-                    print(path+"\\")
-                if isUnix():
-                    print(path + "/")
-            else: print(path)
-            x+=1
+            path = directory+maindir[x]
 
-    def hashCalculator():
+            # If item in directory is another directory
+            if is_valid_directory(path):
+                if is_windows():
+                    path += "\\"
+                    print(path)     # Debug: this shows what is added to the array/spreadsheet
+                    map_directory(path)
+                if is_unix():
+                    path += "/"
+                    print(path)     # Debug: this shows what is added to the array/spreadsheet
+                    map_directory(path)
+
+
+            # If item is a file and not an embedded directory
+            else:
+                print(path)     # Debug: this shows what is added to the array/spreadsheet
+            x += 1
+
+    def hash_calculator():
         print("")
 
-    def dirArray(directory):
+    def directory_array(directory):
         listdir = os.listdir(directory)
         print(directory+listdir[0])
 
 ###################### Excel Functions ##################################
-    #Test openpyxl module to see how to create and manipulate spread sheets
-    def createSpreadSheetFile(filename):
+    # Test openpyxl module to see how to create and manipulate spreadsheets
+    def create_spread_sheet_file(filename):
         workbook = openpyxl.Workbook()
         sheet = workbook.active
         sheet ['A1'] = "Hi"
@@ -138,15 +156,15 @@ if __name__ == "__main__":
 
 ###################### Termination Options ###############################
     # Function to return to menu or quit
-    def returnToMenu():
+    def return_to_menu():
         option = input("\n\n\nReturn to Menu [Enter] or [Q]uit")
-        if option.upper() == "Q": terminate()
-        else: mainMenu()
+        if option.upper() == "Q": terminate(None)
+        else: return_to_menu()
 
 ###################### General Functions ########################
     # Logo ASCII art
     def splash():
-        clearScreen()
+        clear_screen()
         print(".................")
         print("| |           | |")
         print("| | BackupInk | |")
@@ -156,67 +174,33 @@ if __name__ == "__main__":
         print("|   |     | |   |")
         print("|___|_____|_|___|")
         print("Made by dyeadal\n\n")
+
     # Clear console screen
-    def clearScreen():
-        if isWin():
+    def clear_screen():
+        if is_windows():
             os.system('cls')
             print("")
-        elif isUnix() == "Linux":
+        elif is_unix() == "Linux":
             os.system('clear')
         print("")
 
-    def isWin():
+    # Functions to determine OS platform and dictates what commands are ran for their respective platform
+    def is_windows():
         global opsysPlatform
         if opsysPlatform == "Windows":
             return True
-        else: return False
+        else:
+            return False
 
-    def isUnix():
+    def is_unix():
         global opsysPlatform
         if opsysPlatform == "Linux":
             return True
         else: return False
 
-    #Function to quit program
-    def terminate():
-        quit()
+    # Function to quit program
     def terminate(msg):
-        print(msg)
         quit()
 
-
-
-
-#TO DO Loop function to store paths of files and their MD5 hashsums
-    #inputDir list files
-
-
-                #TO DO while loop to recursively list and store directory values
-                    #check if any are directories in array
-                    #if directories exist list those new directories
-                    #loop till no directories left undocumented
-                                        
-                    #print output of array to see append worked
-
-                #TO DO Research either os or subprocess is better for running MD5 hashsum command in Python
-                #EITHER:
-                    #os.popen(Get-FileHash <filepath> -Algorithm MD5).read()
-                #OR:
-                    #output = subprocess.check_output("Get-FileHash <filepath> -Algorithm MD5", shell=True)
-
-
-                #TO DO List disrepencies OR State if no difference in arrays (list array differences)
-                    #Loop to check missing files from back up (indicating new file), or changed MD5 sum (indicating changed file)
-
-                    #Loop to check files that were removed from input that are backed up (removed files from production yet existed before in backups)
-
-                #TO DO: Save changes to an XML file prior to initating backup, as a forensic log
-
-
-                # TO DO Copy file functions of missing or modified files
-                    #
-
-                # TO DO Remove files that were removed in input directory from back up archive if they were removed
-
-    #Starts program
-    mainMenu()
+    # Starts program
+    main_menu()
