@@ -32,11 +32,8 @@ if __name__ == "__main__":
         else:
             return_to_menu()
 
-"""
-Chose Directories Functions
-"""
+    # Chose Directories Functions
 
-    # Function to begin choosing directories to compare and create backups
     def chose_directories():
         splash()
         print("\n\nDirectories for Comparing or Incrementally Backing Up\n")
@@ -105,12 +102,10 @@ Chose Directories Functions
     # Function to validate directory path actually exists
     def is_valid_directory(directorypath):
         return os.path.isdir(directorypath)
-        # Why does this line have an error?
 
-"""
-Integrity Check Functions
-"""
-    # Function to show the differences between the two chosen directories
+
+    # Integrity Check Functions
+
     def directory_differences():
         splash()
         are_directories_chosen()
